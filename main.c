@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "testScanner.h"
 
 #define BUFF 200
 
@@ -53,39 +54,9 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-	FILE *inputPtr = fopen(fileName, "r");
-	if(isfileEmpty(inputPtr, prog) == 1)
+	if(runtestScanner(fileName) == 0)
 		return EXIT_FAILURE;	
 	
-	//call the test drive here
-
-	fclose(inputPtr);
 	return EXIT_SUCCESS;		
-
 }
 
-int isfileEmpty(FILE * fp, char* caller)
-{
-	if(fp != NULL)
-	{
-		fseek(fp, 0, SEEK_END);//set the pointer to the end of the file
-		int test = ftell(fp);
-
-		if(test == 0)
-		{
-			fprintf(stderr, "ERROR: %s: Input is empty\n", caller);
-			return 1;
-		}
-			 
-
-	}
-	else
-	{
-		fprintf(stderr, "ERROR: %s: Cannot open file\n", caller);
-		return 1;
-	}
-	
-	fseek(fp, 0, SEEK_SET); //reset the pointer back to the beginning of the file
-	
-	return 0;
-}
