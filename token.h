@@ -1,14 +1,14 @@
 #ifndef _TOKEN_H
 #define _TOKEN_H
 
+#define keySize 17
 
 char* keywords[] = {"start", "stop", "repeat","until","whole","label","quit","listen",
 		    "yell","main","portal","if","then","pick","declare","assign","proc"};
 
 //ASCII code for operators
 char comp_oprs[] = {60,62,33};
-char hybrid_oprs[] = {61,58};
-char other_opr[] = {37,40,41,42,43,44,45,46,47,59,91,93,123,125};
+char single_oprs[] = {37,40,41,42,43,44,45,46,47,59,91,93,123,125};
 
 //Token ID used to print to the output
 enum tokenID
@@ -17,8 +17,9 @@ enum tokenID
 	NUMBER,
 	KEYWORD,
 	OPERATOR,
-	EndOfFile
-}
+	EndOfFile,
+	COMMENT
+};
 
 char* tokenNames[] = {"Identifier","Number","Keyword","Operator","EOF"};
 
@@ -33,6 +34,5 @@ struct token
 };
 
 int isKeyword(char* identifier);
-
 
 #endif

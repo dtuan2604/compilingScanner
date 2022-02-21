@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -g
 
-SRC = scanner.h testScanner.h token.h
+SRC = scanner.h testScanner.h token.h lex.h
 
 OBJ = scanner.o testScanner.o token.o
 MASTER_OBJ = main.o

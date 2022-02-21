@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "testScanner.h"
+#include "scanner.h"
 
 char* testScanner = "testScanner";
 
@@ -36,7 +37,11 @@ int runtestScanner(char* fileName)
 		return 0;
 
 	//Call scanner here
-	printf("Hello from testScanner");
+	while(nextChar != EOF)
+	{
+		nextChar = fgetc(fp);
+		FSADriver(fp);
+	}
 
 	fclose(fp);
 	return 1;

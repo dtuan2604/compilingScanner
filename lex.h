@@ -1,0 +1,65 @@
+#ifndef _LEX_H
+#define _LEX_H
+
+//lexical definition
+
+#define NUM_STATES 14
+#define NUM_CHARS 9
+
+enum FSAIndex
+{
+        LETTER = 0,
+        DIGIT,
+        COMP_OPR, //operator with "=" only
+        ASSIGN_OPR, //operator "="
+        SINGLE_OPR, //operator without "=" only
+        COLON_OPR, //operator ":"
+        WHITESPACE,
+        HASHTAG,
+        EOFILE
+};
+
+//state of the FSA table
+enum state
+{
+        S1 = 0,S2,S3,S4,S5,S6,S7,
+        S8,S9,S10,S11,S12,S13,S14
+};
+
+enum finalState
+{
+        IDTK = 1000,
+        NUMBTK,
+        KEYWTK,
+        OPRTK,
+        EOFTK,
+        COMMTK
+};
+
+enum ErrorState
+{
+        NO_OPR_EXIST = -3, 
+        NO_ID_STARTWITH,
+        ERROR
+};
+int FSATable[NUM_STATES][NUM_CHARS] = 
+{
+        {S2,S3,S4,S6,S8,S9,S1,S11,EOFTK},
+        {S2,S2,IDTK,IDTK,IDTK,IDTK,IDTK,IDTK,IDTK},
+        {NUMBTK,S3,NUMBTK,NUMBTK,NUMBTK,NUMBTK,NUMBTK,NUMBTK,NUMBTK},
+        {NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,S5,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST},
+        {OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
+        {OPRTK,OPRTK,OPRTK,S7,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
+        {OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
+        {OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
+        {OPRTK,OPRTK,OPRTK,S10,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
+        {OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
+        {S12,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST},
+        {S14,S13,S13,S13,S13,S13,S13,S13,S13},
+        {S14,S13,S13,S13,S13,S13,S13,S13,S13},
+        {COMMTK,S13,S13,S13,S13,S13,S13,S13,S13}
+};
+
+
+
+#endif
