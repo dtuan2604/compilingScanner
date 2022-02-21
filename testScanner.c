@@ -32,15 +32,16 @@ int isfileEmpty(FILE * fp, char* caller)
 
 int runtestScanner(char* fileName)
 {
+	struct token * tok;
 	FILE * fp = fopen(fileName, "r");
 	if(isfileEmpty(fp,testScanner) == 1)
 		return 0;
 
 	//Call scanner here
-	while(nextChar != EOF)
+	while(1)//run until encounter EOF or error
 	{
-		nextChar = fgetc(fp);
-		FSADriver(fp);
+		tok = FSADriver(fp);
+		//TODO: Implement printer to print out token
 	}
 
 	fclose(fp);

@@ -1,14 +1,35 @@
 #include <stdio.h>
 #include "lex.h"
-#include "scanner.h"
 #include <string.h>
 #include <ctype.h>
+#include "token.h"
+#include <stdlib.h>
 
 extern char comp_oprs[];
 extern char single_oprs[];
+char nextChar;
+static int countChar = 0;
+static int countLine = 1;
 
 int new_line_flag = 0; 
+char* FSAFile = "FSADriver";
 
+int isKeyword(char* identifier)
+{
+        int i = 0;
+        int res;
+        while(i < keySize)
+        {   
+                res = strcmp(identifier, keywords[i]);
+                if(res == 0)
+                        return 1; //1 means the identifier is keyword
+                else
+                        i++;
+        }   
+    
+        return 0; //0 means the identifier is not keyword
+
+}
 int isOperator(char character)
 {
         int i = 0;
@@ -46,10 +67,7 @@ int charToFSAIndex(char character)
 		return DIGIT;
 	else if(isspace(character) != 0)
 	{
-		if(character == '\n')
-			new_line_flag = 1;
-		else
-			new_line_flag = 0;
+		new_line_flag = character == '\n' ? 1 : 0;
 		return WHITESPACE;
 	}	
 	else if(character == EOF)
@@ -69,27 +87,82 @@ int charToFSAIndex(char character)
 			return HASHTAG;
 	}
 	
-	return -1; //No character matches with lexical definition
+	return NONEXIST; //No character matches with lexical definition
 
 }
 
-void FSADriver(FILE* fp)
+struct token * FSADriver(FILE* fp)
 {
-	int test = charToFSAIndex(nextChar);
-	switch(test)
+	nextChar = fgetc(fp);
+	countChar++;
+
+	struct token* tok = (struct token*)malloc(sizeof(struct token));
+	if(tok == NULL)
 	{
-		case LETTER: printf("%c is a letter\n",nextChar);
-				break;
-		case DIGIT: printf("%c is a digit\n",nextChar);break;
-		case WHITESPACE: if(new_line_flag != 1) printf("skip white space now\n");
-				else printf("Next line\n"); break;
-		case COMP_OPR:
-		case SINGLE_OPR:
-		case ASSIGN_OPR:
-		case COLON_OPR: printf("%c is a operator\n",nextChar);break;
-		case HASHTAG: printf("%c is a hashtag\n", nextChar);break;
-		case EOFILE: printf("End of file\n");break;
-		default: printf("%c is not allowed!\n");
+                printf("ERROR: %s: failed to allocate memory\n",FSAFile);
+                return NULL;
+        } 
+	tok->tokenIns = (char*)malloc(MAX_LENGTH);
+	if(tok->tokenIns == NULL)
+        {   
+                printf("ERROR: %s: failed to allocate memory\n",FSAFile);
+                return NULL;
+        }
+	memset(tok->tokenIns,'\0',MAX_LENGTH);   
+	
+	int state = S1;
+	int nextState;
+	int index = charToFSAIndex(nextChar);
+	char* stringIns = (char*)malloc(MAX_LENGTH);
+	if(stringIns == NULL)
+        {
+                printf("ERROR: %s: failed to allocate memory\n",FSAFile);
+                return NULL;
+        }
+	memset(stringIns,'\0',MAX_LENGTH);
+	strncat(stringIns, &nextChar, 1);
+
+	if(index == NONEXIST)
+	{
+		tok->tokenID = NO_CHAR_EXIST;
+		strcpy(tok->tokenIns, stringIns);
+		tok->line = countLine;
+		tok->charN = countChar;
+		return tok; 
+	}else if(index == WHITESPACE && new_line_flag == 1)
+		countLine++; 
+	
+	while(state < FINAL)
+	{
+		nextState = FSATable[state][index];
+		
+		if(nextState < ERROR || nextState > FINAL)
+		{
+			tok->tokenID = nextState < ERROR ? nextState : nextState - (FINAL + 1);
+			strcpy(tok->tokenIns, stringIns);
+			tok->line = countLine;
+			tok->charN = countChar;
+			break;			
+		}else{
+			state = nextState;
+			nextChar = fgetc(fp);
+			countChar++;
+			index = charToFSAIndex(nextChar);
+			if(index == WHITESPACE && new_line_flag == 1)
+				countLine++;			
+
+		}	
+				
+
 	}
-	return;
+	return tok;
 }
+
+
+
+
+
+
+
+
+

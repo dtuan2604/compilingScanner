@@ -3,7 +3,7 @@ CFLAGS = -Wall -g
 
 SRC = scanner.h testScanner.h token.h lex.h
 
-OBJ = scanner.o testScanner.o token.o
+OBJ = scanner.o testScanner.o
 MASTER_OBJ = main.o
 
 MASTER = scanner
