@@ -1,9 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "lex.h"
+#include "token.h"
 #include "testScanner.h"
 #include "scanner.h"
 
 char* testScanner = "testScanner";
-
+char nextChar;
 int isfileEmpty(FILE * fp, char* caller)
 {
         if(fp != NULL)
@@ -29,21 +32,31 @@ int isfileEmpty(FILE * fp, char* caller)
 
         return 0;
 }
-
 int runtestScanner(char* fileName)
 {
 	struct token * tok;
 	FILE * fp = fopen(fileName, "r");
 	if(isfileEmpty(fp,testScanner) == 1)
 		return 0;
-
+	nextChar = fgetc(fp);
 	//Call scanner here
 	while(1)//run until encounter EOF or error
 	{
 		tok = FSADriver(fp);
 		//TODO: Implement printer to print out token
+		if(tok->tokenID < ERROR)
+		{
+			printError(tok);
+			return -1; //encounter errors			
+		}else{
+			printToken(tok);
+			if(tok->tokenID == EndOfFile)
+				break;
+		}
 	}
 
 	fclose(fp);
-	return 1;
+	free(tok->tokenIns);
+	free(tok);
+	return 1; //the program run successfully
 }

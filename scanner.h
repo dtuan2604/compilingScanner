@@ -1,11 +1,11 @@
 #ifndef _SCANNER_H
 #define _SCANNER_H
+#include "token.h"
 
-#define NUM_ERRORS 
+#define NUM_ERRORS 3 
 
-char* errorString[] = {"This character is not allowed in the lexical definition.",
-			"There is no such operator existed in the lexical definition.",
-			"Identifier can not start with uppercase letter."};
+void printError(struct token * tok);
+void printToken(struct token * tok);
 
 int isKeyword(char* identifier);
 int isOperator(char character);
