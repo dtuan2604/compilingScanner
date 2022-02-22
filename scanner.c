@@ -23,15 +23,15 @@ void printError(struct token * tok)
         printf("SCANNER ERROR: ");
         printf("\033[1;33m");
         printf("%s ",errorString[errorCode]);
-        printf("(string: %s, line: %d, char: %d)\n",tok->tokenIns, tok->line, tok->charN);
+        printf("(string: \'%s\', line: %d, starting char: %d)\n",tok->tokenIns, tok->line, tok->charN);
         printf("\033[0m");
 }
 void printToken(struct token * tok)
 {
         if(tok->tokenID == COMMENT)
                 return;
-        printf("String: %s,",tok->tokenIns);
-        printf(" token type: %s,",tokenNames[tok->tokenID]);
+        printf("String: \'%s\',",tok->tokenIns);
+        printf(" token type: \'%s\',",tokenNames[tok->tokenID]);
         printf(" line: %d,",tok->line);
         printf(" starting char: %d.\n",tok->charN);
 
@@ -145,18 +145,6 @@ struct token * FSADriver(FILE* fp)
         }
 	memset(stringIns,'\0',MAX_LENGTH);
 
-	if(index == NONEXIST)
-	{
-		tok->tokenID = NO_CHAR_EXIST;
-		strncat(tok->tokenIns, &nextChar, 1);
-		tok->line = countLine;
-		tok->charN = startChar;
-		return tok; 
-	}else if(index == WHITESPACE && new_line_flag == 1)
-	{
-		countLine++; 
-		countChar = 0;
-	}
 	while(state < FINAL)
 	{
 		if(countChar - startChar >= MAX_LENGTH - 1 && comment_flag == 0){
@@ -171,7 +159,10 @@ struct token * FSADriver(FILE* fp)
 		if(nextState < ERROR || nextState > FINAL)
 		{
 			tok->tokenID = nextState < ERROR ? nextState : nextState - (FINAL + 1);
-			strcpy(tok->tokenIns, stringIns);
+			if(stringIns[0] == '\0')
+				strncat(tok->tokenIns, &nextChar, 1);
+			else
+				strcpy(tok->tokenIns, stringIns);
 			tok->line = countLine;
 			tok->charN = startChar;
 			
@@ -191,21 +182,23 @@ struct token * FSADriver(FILE* fp)
 		}else{
 			if(nextState == S12)
 				comment_flag = 1;
+			if(index == WHITESPACE && new_line_flag == 1)
+                        {
+                                countLine++;
+                                countChar = comment_flag == 0 ? 1 : 0;
+				startChar = 1;
+                        }
 			if(index != WHITESPACE && comment_flag == 0)
 				strncat(stringIns, &nextChar, 1);
 			state = nextState;
 			nextChar = fgetc(fp);
 			countChar++;
 			index = charToFSAIndex(nextChar);
-			if(index == WHITESPACE && new_line_flag == 1)
-			{
-				countLine++;
-				countChar = 0;			
-			}
 		}	
 				
 
 	}
+	free(stringIns);
 	return tok;
 }
 
