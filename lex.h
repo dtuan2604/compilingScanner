@@ -39,7 +39,8 @@ enum finalState
 
 enum ErrorState
 {
-	OVERBOUND = -5,
+	UNTERMINATED_COMM = -6,
+	OVERBOUND,
 	NO_CHAR_EXIST,
         NO_OPR_EXIST, 
         NO_ID_STARTWITH,

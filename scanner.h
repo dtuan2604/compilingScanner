@@ -11,5 +11,4 @@ int isKeyword(char* identifier);
 int isOperator(char character);
 int charToFSAIndex(char character);
 struct token * FSADriver(FILE* fp);
-
 #endif

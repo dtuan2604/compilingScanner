@@ -17,10 +17,10 @@ int FSATable[NUM_STATES][NUM_CHARS] =
         {OPRTK,OPRTK,OPRTK,S10,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
         {OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK,OPRTK},
         {NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,NO_OPR_EXIST,S12,NO_OPR_EXIST,NO_OPR_EXIST},
-	{S13,S13,S13,S13,S13,S13,S13,S14,S13,S13},
-        {S13,S13,S13,S13,S13,S13,S13,S14,S13,S13},
-        {S13,S13,S13,S13,S13,S13,S13,S15,S13,S13},
-	{COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK}
+	{S13,S13,S13,S13,S13,S13,S13,S14,UNTERMINATED_COMM,S13},
+        {S13,S13,S13,S13,S13,S13,S13,S14,UNTERMINATED_COMM,S13},
+        {S13,S13,S13,S13,S13,S13,S13,S15,UNTERMINATED_COMM,S13},
+	{COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK,COMMTK}
 };
 
 char comp_oprs[] = {60,62,33,'\0'};
@@ -33,5 +33,6 @@ char* keywords[] = {"start", "stop", "repeat","until","whole","label","quit","li
 char* errorString[] = {"Identifier can not start with uppercase letter.",
 			"There is no such operator existed in the lexical definition.",
 			"This character is not allowed in the lexical definition.",
-			"Identifier and number token must not exceed 8 characters."};
+			"Identifier and number token must not exceed 8 characters.",
+			"Reach end of file, unterminated comment."};
 #endif

@@ -43,7 +43,6 @@ int runtestScanner(char* fileName)
 	while(1)//run until encounter EOF or error
 	{
 		tok = FSADriver(fp);
-		//TODO: Implement printer to print out token
 		if(tok->tokenID < ERROR)
 		{
 			printError(tok);

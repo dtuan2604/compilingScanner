@@ -93,6 +93,7 @@ int charToFSAIndex(char character)
 	else if(isspace(character) != 0)
 	{
 		new_line_flag = (character == '\n') ? 1 : 0;
+		whitespace_flag = 1;
 		return WHITESPACE;
 	}	
 	else if(character == EOF)
@@ -111,7 +112,6 @@ int charToFSAIndex(char character)
 		else if(character == 35)
 			return HASHTAG;
 	}
-	
 	return NONEXIST; //No character matches with lexical definition
 
 }
@@ -126,34 +126,37 @@ struct token * FSADriver(FILE* fp)
                 printf("ERROR: %s: failed to allocate memory\n",FSAFile);
                 return NULL;
         } 
-	tok->tokenIns = (char*)malloc(MAX_LENGTH);
+	tok->tokenIns = (char*)malloc(MAX_LENGTH + 1);
 	if(tok->tokenIns == NULL)
         {   
                 printf("ERROR: %s: failed to allocate memory\n",FSAFile);
                 return NULL;
         }
-	memset(tok->tokenIns,'\0',MAX_LENGTH);   
+	memset(tok->tokenIns,'\0',MAX_LENGTH + 1);   
+	tok->line = -1;
+	tok->charN = -1;	
 	
 	int state = S1;
 	int nextState;
 	int index = charToFSAIndex(nextChar);
-	char* stringIns = (char*)malloc(MAX_LENGTH);
+	char* stringIns = (char*)malloc(MAX_LENGTH + 1);
 	if(stringIns == NULL)
         {
                 printf("ERROR: %s: failed to allocate memory\n",FSAFile);
                 return NULL;
         }
-	memset(stringIns,'\0',MAX_LENGTH);
+	memset(stringIns,'\0',MAX_LENGTH + 1);
 
 	while(state < FINAL)
 	{
-		if(countChar - startChar >= MAX_LENGTH - 1 && comment_flag == 0){
+		if(countChar - startChar > MAX_LENGTH && comment_flag == 0){
 			tok->tokenID = OVERBOUND;
                         strcpy(tok->tokenIns, stringIns);
                         tok->line = countLine;
                         tok->charN = startChar;
 			break;	
 		}
+
 		nextState = FSATable[state][index];
 		
 		if(nextState < ERROR || nextState > FINAL)
@@ -163,8 +166,8 @@ struct token * FSADriver(FILE* fp)
 				strncat(tok->tokenIns, &nextChar, 1);
 			else
 				strcpy(tok->tokenIns, stringIns);
-			tok->line = countLine;
-			tok->charN = startChar;
+			tok->line = tok->line == -1 ? countLine : tok->line; //the line might be already set if the token was the comment token
+			tok->charN = tok->charN == -1 ? startChar : tok->charN; 
 			
 			if(tok->tokenID == IDENT)
 			{
@@ -175,18 +178,26 @@ struct token * FSADriver(FILE* fp)
 					case -1: tok->tokenID = NO_ID_STARTWITH; 
 						break;
 				}
-			}else if(tok->tokenID == COMMENT)
+			}else if(tok->tokenID == COMMENT){
 				comment_flag = 0;
+			}
 					
 			break;			
 		}else{
-			if(nextState == S12)
+			if(nextState == S12){
 				comment_flag = 1;
-			if(index == WHITESPACE && new_line_flag == 1)
+				strncat(stringIns, &nextChar, 1);
+				tok->line = countLine;
+				tok->charN = startChar;
+			}
+			if(index == WHITESPACE)
                         {
-                                countLine++;
-                                countChar = comment_flag == 0 ? 1 : 0;
-				startChar = 1;
+                                if(new_line_flag == 1){
+					countLine++;
+                                	countChar = 0;
+					startChar = 0;
+				}else
+					startChar = countChar;
                         }
 			if(index != WHITESPACE && comment_flag == 0)
 				strncat(stringIns, &nextChar, 1);
@@ -194,6 +205,11 @@ struct token * FSADriver(FILE* fp)
 			nextChar = fgetc(fp);
 			countChar++;
 			index = charToFSAIndex(nextChar);
+			if(index != WHITESPACE && whitespace_flag == 1){
+				//skip whitespace and start counting the characters
+				whitespace_flag = 0;
+				startChar = countChar;
+			}
 		}	
 				
 
@@ -201,12 +217,3 @@ struct token * FSADriver(FILE* fp)
 	free(stringIns);
 	return tok;
 }
-
-
-
-
-
-
-
-
-
