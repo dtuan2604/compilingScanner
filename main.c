@@ -14,7 +14,7 @@ int isfileEmpty(FILE* fp, char* caller);
 int main(int argc, char** argv)
 {
 	strcpy(prog,argv[0]);
-
+	
 	if(argc == 2)
 	{
 		strcpy(fileName, argv[1]);

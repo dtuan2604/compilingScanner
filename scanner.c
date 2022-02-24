@@ -72,7 +72,7 @@ int isOperator(char character)
         i = 0;
         while(i < single_opr_size)
         {   
-                if(character == comp_oprs[i])
+                if(character == single_oprs[i])
                         return 1; //means that this is single operator
                 else
                         i++;

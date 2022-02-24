@@ -3,8 +3,8 @@
 Name:		Duong Tuan Hoang
 Section: 	CMPSCI 4280 - Program Translation Project
 VCS:		git
-Date:		02/23/2022
-Project Option:	3 FSA table + driver (100 points) 
+Date:		02/24/2022
+Project Option:	Option 3 with FSA table + driver (100 points) 
 
 ## Files	
 	main.c - the main program to process the input
@@ -20,7 +20,7 @@ Project Option:	3 FSA table + driver (100 points)
 	> To give the program keyboard input, run: ./P0 (remember to Enter and then Ctrl + D 
 	to finish the input)
 	> To direct the input from a file into program, run: ./P0 < filename
-	> To give program a file with extension ".sp2022", run: ./P0 filename (without extension)
+	> To let the program read input from a file, run: ./P0 filename
 
 ## Remove all executable and object files
 
